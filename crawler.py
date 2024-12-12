@@ -17,7 +17,7 @@ class Crawler:
             html = self.make_request(current)
             links = self.get_links(html)
             for link in links:
-                if (link[0] == '/'):
+                if (len(link) > 0 and link[0] == '/'):
                     link = self.homepage + link
                 if (link not in self.visited and len(link) > 0 and link[0] != '#' and (link[0] == '/' or link[:len(self.homepage)] == self.homepage)):
                     self.visited.append(link)
@@ -25,7 +25,7 @@ class Crawler:
             self.update_reports()
         print(self.visited)
 
-    # real-time reports of the queue and the total visited urls. Mesmerizing when open in VS Code :)
+    # real-time tracking of the queue and the total visited urls. Mesmerizing when open in VS Code :)
     def update_reports(self):
         total = open("./total.txt", "w")
         queue = open("./queue.txt", "w")
@@ -38,21 +38,21 @@ class Crawler:
     def make_request(self, url):
         try:
             response = urllib.request.urlopen(url)
-            print(response.getcode())
+            print(url + ' ' + str(response.getcode()))
             if response.getcode() < 200 or response.getcode() >= 300:
-                print(url + ' not reachable')
+                print(url + ' error code ' + response.getcode())
                 return ''
             return response.read()
         except Exception as exception:
             print(exception)
             return ''
 
-    # use external package to get all links. This is copied from docs + ChatGPT, wasn't a learning priority
+    # use external package to get all links. Learning BeautifulSoup is not a priority for now, I've asked ChatGPT how to get all links
     def get_links(self, html):
-        soup = BeautifulSoup(html, 'html.parser')
-        links = [a['href'] for a in soup.find_all('a', href=True)]
+        soup = BeautifulSoup(html, 'html.parser') # ChatGPT
+        links = [a['href'] for a in soup.find_all('a', href=True)] # ChatGPT, this is an interesting approach, I'll take a look at it
         return links
 
 # instantiate with a hardcoded homepage. Homepage has to be without the trailing slash
-crawler = Crawler("https://guitar-lessons.eu")
+crawler = Crawler("https://www.suse.com")
 crawler.crawl()
