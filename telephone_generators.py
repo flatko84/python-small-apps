@@ -75,7 +75,11 @@ def nums_to_angles(nums):
         yield num * 30
 
 
-
+def is_phone_tastic(text):
+    nums = text_to_nums(text)
+    angles = nums_to_angles(nums)
+    normalized_angle = sum(angles) % 360
+    return normalized_angle % len(text) == 0
 
 
 ## function calls with hardcoded examples
@@ -85,7 +89,7 @@ def nums_to_angles(nums):
 # text = "vladimirs"
 # print(list(text_to_nums(text)))
 
-print(list(angles_to_nums([299,240,270,480])))
+print(is_phone_tastic("python"))
 
 
 
