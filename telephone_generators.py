@@ -1,4 +1,5 @@
 class TelephoneGenerators:
+    """Data input convesrions on a Nokia S40 keyboard."""
 
     def __init__(self):
         self.matrix = [
@@ -16,6 +17,7 @@ class TelephoneGenerators:
 
     ## very small change was needed to turn this into a generator
     def nums_to_text(self, nums):
+        """Convert a sequence of numbers into a string."""
 
         prev = None ## previous key
         counter = None ## number of presses
@@ -48,6 +50,7 @@ class TelephoneGenerators:
 
 
     def text_to_nums(self, text):
+        """Convert a string to a sequence of numbers."""
         text = text.upper()
         prev_index = -1
         for letter in text:
@@ -65,6 +68,7 @@ class TelephoneGenerators:
 
 
     def angles_to_nums(self, angles):
+        """Convert normalized angles of rotation to sequence of numbers."""
         for angle in angles:
             num = round(angle / 30) % 12
             if num > 9:
@@ -72,6 +76,7 @@ class TelephoneGenerators:
             yield num
 
     def nums_to_angles(self, nums):
+        """Convert a sequence of numbers to normalized angles of rotation."""
         for num in nums:
             if num == 0 or num > 10:
                 num = 10
@@ -79,6 +84,7 @@ class TelephoneGenerators:
 
 
     def is_phone_tastic(self, text):
+        """Convert a string to a normalized sum of angles, then check if it can be divided by the string length."""
         nums = self.text_to_nums(text)
         angles = self.nums_to_angles(nums)
         normalized_angle = sum(angles) % 360
