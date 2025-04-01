@@ -13,7 +13,7 @@ class ListComprehensions:
         return [(x, y) for x in range(3) for y in range(3)]
     
     def task_3(self) -> set[str]:
-        """Returns a set with all unique vowels in 'comprehension.'"""
+        """Returns a set with all unique vowels in 'comprehension'."""
         word: str = 'comprehension'
         vowels: set[str] = {'a', 'e', 'i', 'o', 'u'}
         return {letter for letter in word.lower() if letter in vowels}
