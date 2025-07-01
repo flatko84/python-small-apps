@@ -130,8 +130,10 @@ class Crawler:
     def write_csv(self, fields):
         row = []
         for key, value in self.map_fields.items():
-            if value in fields.keys():
+            if value in fields.keys() and fields[value]:
                 row.append(fields[value])
+            else:
+                row.append('')
         self.recordswriter.writerow(row)
 
 
