@@ -11,12 +11,14 @@ class Scraper:
         self.url = url
         self.make_request()
         self.get_bs_object()
-        self.fields = {}
+        self.fields = {'url': url}
         self.get_links()
         self.get_images()
         self.get_product_properties()
         self.get_h1()
-        self.get_by_class('item_subtitle', 'model')
+        self.get_by_class('div', 'item_subtitle', 'model')
+        self.get_by_class('span', 'new_price', 'price')
+        self.get_by_class('div', 'type_material', 'material')
         
         
     def make_request(self):
@@ -61,9 +63,9 @@ class Scraper:
         except:
             print("Probably not a product page.")
 
-    def get_by_class(self, element_class, name):
+    def get_by_class(self, element, element_class, name):
         try:
-            title = self.bs_object.find('div', class_=element_class)
+            title = self.bs_object.find(element, class_=element_class)
             self.fields.update({name: self.strip_tags(str(title))})
         except:
             print("Probably not a product page.")
@@ -74,6 +76,18 @@ class Scraper:
 
 class Crawler:
     """Use BFS to crawl an entire website."""
+
+    map_fields = {'brand': 'brand',
+                  'model': 'model',
+                  'price': 'price',
+                  'model_size': None,
+                  'shape': 'Форма',
+                  'frame_material': 'material',
+                  'frame_color': 'Цвят на рамката',
+                  'image_url': 'image',
+                  'link': 'url',
+                  'model_type': None,
+                  'category_in_dataset': None}
 
     def __init__(self, homepage):
         self.homepage = homepage
@@ -87,6 +101,7 @@ class Crawler:
     def crawl(self):
         """Entry point."""
         self.queue.append(self.homepage)
+        self.recordswriter.writerow(self.map_fields.keys())
         while len(self.queue):
             current = self.queue.pop(0)
             page = Scraper(current)
@@ -114,16 +129,10 @@ class Crawler:
 
     def write_csv(self, fields):
         row = []
-        for key, value in enumerate(fields):
-            row.append(value)
-
+        for key, value in self.map_fields.items():
+            if value in fields.keys():
+                row.append(fields[value])
         self.recordswriter.writerow(row)
-
-    
-        
-#page = Scraper('https://opticlasa.com/products/view/gucci-GG1527S-001-122636')
-#print(page.fields)
-
 
 
 # instantiate with a hardcoded homepage. Homepage has to be without the trailing slash
