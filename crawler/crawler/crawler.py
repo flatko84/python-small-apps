@@ -45,7 +45,7 @@ class Scraper:
         try:
             self.fields.update({'image': images[0]})
         except:
-            print(f"Image not found for {self.url}")
+            print(f"Probably not a product page.")
     
     def get_product_properties(self):
         content = self.bs_object.find('div', class_='item_text').find_all('p')
@@ -89,27 +89,19 @@ class Crawler:
                   'model_type': None,
                   'category_in_dataset': None}
 
-    def __init__(self, homepage):
+    def __init__(self, homepage, resume = True):
         self.homepage = homepage
         self.queue = []
         self.visited = []
         self.fields_header = []
         self.csvfile = open('./table.csv', 'w', newline='', encoding='utf-8-sig')
         self.recordswriter = csv.writer(self.csvfile, delimiter=";")
+        if resume:
+            self.resume()
         
 
     def crawl(self):
         """Entry point."""
-        with open('./queue.txt', 'r') as queue:
-            reader = csv.reader(queue)
-            for row in reader:
-                if len(row) > 0:
-                    self.queue.append(row[0])
-        with open('./total.txt', 'r') as total:
-            reader = csv.reader(total)
-            for row in reader:
-                if len(row) > 0:
-                    self.visited.append(row[0])
         self.queue.append(self.homepage)
         self.recordswriter.writerow(self.map_fields.keys())
         while len(self.queue):
@@ -138,6 +130,7 @@ class Crawler:
                 queue.write(url + "\n")
 
     def write_csv(self, fields):
+        """Write results to CSV file."""
         row = []
         for key, value in self.map_fields.items():
             if value in fields.keys() and fields[value]:
@@ -146,6 +139,22 @@ class Crawler:
                 row.append('')
         self.recordswriter.writerow(row)
         self.csvfile.flush()
+
+    def resume(self):
+        """Resume last state from the text files."""
+        try:
+            with open('./queue.txt', 'r') as queue:
+                reader = csv.reader(queue)
+                for row in reader:
+                    if len(row) > 0:
+                        self.queue.append(row[0])
+            with open('./total.txt', 'r') as total:
+                reader = csv.reader(total)
+                for row in reader:
+                    if len(row) > 0:
+                        self.visited.append(row[0])
+        except FileNotFoundError:
+            print("Nothing to resume. Starting clean.")
 
 
 # instantiate with a hardcoded homepage. Homepage has to be without the trailing slash
