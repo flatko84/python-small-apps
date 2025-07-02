@@ -94,8 +94,8 @@ class Crawler:
         self.queue = []
         self.visited = []
         self.fields_header = []
-        self.csvfile = open('./table.csv', 'w')
-        self.recordswriter = csv.writer(self.csvfile)
+        self.csvfile = open('./table.csv', 'w', newline='', encoding='utf-8-sig')
+        self.recordswriter = csv.writer(self.csvfile, delimiter=";")
         
 
     def crawl(self):
@@ -114,7 +114,7 @@ class Crawler:
                     self.visited.append(link)
                     self.queue.append(link)
             self.update_reports()
-            time.sleep(5)
+            time.sleep(10)
 
         print(self.visited)
 
@@ -135,6 +135,7 @@ class Crawler:
             else:
                 row.append('')
         self.recordswriter.writerow(row)
+        self.csvfile.flush()
 
 
 # instantiate with a hardcoded homepage. Homepage has to be without the trailing slash
