@@ -100,6 +100,16 @@ class Crawler:
 
     def crawl(self):
         """Entry point."""
+        with open('./queue.txt', 'r') as queue:
+            reader = csv.reader(queue)
+            for row in reader:
+                if len(row) > 0:
+                    self.queue.append(row[0])
+        with open('./total.txt', 'r') as total:
+            reader = csv.reader(total)
+            for row in reader:
+                if len(row) > 0:
+                    self.visited.append(row[0])
         self.queue.append(self.homepage)
         self.recordswriter.writerow(self.map_fields.keys())
         while len(self.queue):
